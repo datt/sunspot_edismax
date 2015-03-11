@@ -265,6 +265,44 @@ module Sunspot
         @query.phrase_2_slop = slop
       end
 
+      # @Datt
+      # Phrase fields are an awesome edismax feature that chops the input into
+      # tri-grams adds extra boost to documents for which all the fulltext
+      # keywords appear in close proximity
+      # in one of the given fields. Excellent for titles, headlines, etc.
+      #
+      # Boosted fields are specified in a hash of field names to a boost, as
+      # with the #fields and #boost_fields methods.
+      #
+      # === Example
+      #
+      #   Sunspot.search(Post) do
+      #     keywords 'nothing reveals like relevance' do
+      #       phrase_3_fields :title => 2.0
+      #     end
+      #   end
+      #
+      def phrase_3_fields(boosted_fields)
+        if boosted_fields
+          boosted_fields.each_pair do |field_name, boost|
+            @setup.text_fields(field_name).each do |field|
+              @query.add_phrase_3_field(field, boost)
+            end
+          end
+        end
+      end
+
+      # @Datt: Added support for ps3
+      # The maximum number of words that can appear between search terms for a
+      # field to qualify for phrase 3 field boost. See #query_phrase_slop for
+      # examples. Phrase 3 slop  is only meaningful if phrase fields are specified
+      # (see #phrase_3_fields), and it does not have an effect on which results
+      # are returned; only on what their respective boosts are.
+      #
+      def phrase_3_slop(slop)
+        @query.phrase_3_slop = slop
+      end
+
       #
       # A tiebreaker coefficient for scores derived from subqueries that are
       # lower-scoring than the maximum score subquery. Typically a near-zero

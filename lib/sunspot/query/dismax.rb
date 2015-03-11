@@ -7,7 +7,7 @@ module Sunspot
     # words across a union of several fields.
     #
     class Dismax < AbstractFulltext
-      attr_writer :minimum_match, :phrase_slop, :query_phrase_slop, :tie, :phrase_2_slop
+      attr_writer :minimum_match, :phrase_slop, :query_phrase_slop, :tie, :phrase_2_slop, :phrase_3_slop
 
       def initialize(keywords)
         @keywords = keywords
@@ -22,6 +22,7 @@ module Sunspot
         @query_phrase_slop = nil
         @tie = nil
         @phrase_2_slop = nil
+        @phrase_3_slop = nil
       end
 
       #
@@ -37,6 +38,7 @@ module Sunspot
         params[:qs] = @query_phrase_slop if @query_phrase_slop
         params[:tie] = @tie if @tie
         params[:ps2] = @phrase_2_slop if @phrase_2_slop
+        params[:ps3] = @phrase_3_slop if @phrase_3_slop
 
         if @phrase_fields
           params[:pf] = @phrase_fields.map { |field| field.to_boosted_field }.join(' ')
@@ -44,6 +46,10 @@ module Sunspot
 
         if @phrase_2_fields
           params[:pf2] = @phrase_2_fields.map { |field| field.to_boosted_field }.join(' ')
+        end
+
+        if @phrase_3_fields
+          params[:pf3] = @phrase_3_fields.map { |field| field.to_boosted_field }.join(' ')
         end
 
         unless @boost_queries.empty?
